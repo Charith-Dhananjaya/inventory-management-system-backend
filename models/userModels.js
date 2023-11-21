@@ -6,13 +6,13 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add a name"],
     },
-    name: {
+    email: {
       type: String,
       required: [true, "Please add a email"],
       unique: true,
       trim: true,
       match: [
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+        /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/,
         "please enter a valid email",
       ],
     },
@@ -43,5 +43,5 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const user = mongoose.model("User", userSchema);
-module.exports = user;
+const User = mongoose.model("User", userSchema);
+module.exports = User;
