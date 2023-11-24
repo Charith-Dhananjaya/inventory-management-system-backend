@@ -10,7 +10,7 @@ const generateToken = (id) =>{
   
 };
 
-
+//register user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -74,6 +74,13 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 });
 
+//login user
+const loginUser = asyncHandler( async (req, res) => {
+  res.send("login user");
+});
+
+
 module.exports = {
   registerUser,
+  loginUser,
 };
