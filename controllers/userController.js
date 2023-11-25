@@ -113,9 +113,14 @@ if(user && passwordIsCorrect){
 }
 
 });
+// logout user
+  const logout = asyncHandler(async(req, res) => {
+    res.send("Logout user");
+  });
 
 
 module.exports = {
   registerUser,
   loginUser,
+  logout
 };
