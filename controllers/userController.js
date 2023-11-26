@@ -115,12 +115,19 @@ if(user && passwordIsCorrect){
 });
 // logout user
   const logout = asyncHandler(async(req, res) => {
-    res.send("Logout user");
+    res.cookie("token", "",{
+      path: "/",
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 *86400), //1 day
+      sameSite: "none",
+      secure: true,
+  })
+  return res.status(200).json({message: "Successfully logged out"});
   });
 
 
 module.exports = {
   registerUser,
   loginUser,
-  logout
+  logout,
 };
