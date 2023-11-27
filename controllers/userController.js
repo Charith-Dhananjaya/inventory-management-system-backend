@@ -127,7 +127,24 @@ if(user && passwordIsCorrect){
 
   //Get user
   const getUser = asyncHandler(async(req, res) => {
-    res.send("get user data");
+   const user = await User.findById(req.user._id)
+
+   if (user) {
+    const { _id, name, email, photo, phone, bio } = user;
+    res.status(201).json({
+      _id,
+      name,
+      email,
+      photo,
+      phone,
+      bio,
+     
+    });
+  } else {
+    res.status(400);
+    throw new Error("user not found");
+  }
+
   });
 
 
