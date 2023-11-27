@@ -125,9 +125,15 @@ if(user && passwordIsCorrect){
   return res.status(200).json({message: "Successfully logged out"});
   });
 
+  //Get user
+  const getUser = asyncHandler(async(req, res) => {
+    res.send("get user data");
+  });
+
 
 module.exports = {
   registerUser,
   loginUser,
   logout,
+  getUser,
 };
