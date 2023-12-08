@@ -2,6 +2,8 @@ const asyncHandler = require("express-async-handler");
 const User = require("../models/userModels");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const Token  = require("../models/tokenModels");
+const crypto = require("crypto");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -153,66 +155,78 @@ const loginStatus = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
   const user = await user.findById(req.user._id);
 
-if(user){
-  const{_id, name, email, photo, phone, bio} = user;
-  user.email = email;
-  user.name = req.body.name || name;
-  user.phone = req.body.phone || phone;
-  user.bio = req.body.bio || bio;
-  user.photo = req.body.photo || photo;
+  if (user) {
+    const { _id, name, email, photo, phone, bio } = user;
+    user.email = email;
+    user.name = req.body.name || name;
+    user.phone = req.body.phone || phone;
+    user.bio = req.body.bio || bio;
+    user.photo = req.body.photo || photo;
 
-  const updateUser = await user.save()
-  res.status(200).json({
-    _id: updateUser._id,
-    name: updateUser.name,
-    email: updateUser.email,
-    photo: updateUser.photo,
-    phone: updateUser.phone,
-    bio: updateUser.bio,
-  });
-}else {
-  res.status(404)
-  throw new Error("user not found")
-}
-
+    const updateUser = await user.save();
+    res.status(200).json({
+      _id: updateUser._id,
+      name: updateUser.name,
+      email: updateUser.email,
+      photo: updateUser.photo,
+      phone: updateUser.phone,
+      bio: updateUser.bio,
+    });
+  } else {
+    res.status(404);
+    throw new Error("user not found");
+  }
 });
 
-
-
 //change password
-const changePasssword = asyncHandler(async(req, res) => {
+const changePasssword = asyncHandler(async (req, res) => {
   const user = await user.findById(req.user._id);
 
-  const{oldPassword, password} = req.body;
-  if(!user) {
+  const { oldPassword, password } = req.body;
+  if (!user) {
     res.status(400);
     throw new Error("user not found, please sign up");
   }
 
   //validate
-  if(!oldPassword || !password) {
+  if (!oldPassword || !password) {
     res.status(400);
     throw new Error("Please add old and new password");
   }
-//check if password matches password in db
-  const passwordIsCorrect = await bcrypt.compare(oldPassword, user.password)
+  //check if password matches password in db
+  const passwordIsCorrect = await bcrypt.compare(oldPassword, user.password);
 
   //save new password
-  if(user && passwordIsCorrect){
-    user.password = password
-    await user.save()
-    res.status(200).send("password change successful")
-  }else{
+  if (user && passwordIsCorrect) {
+    user.password = password;
+    await user.save();
+    res.status(200).send("password change successful");
+  } else {
     res.status(400);
     throw new Error("old password incorrect");
   }
-
 });
 
 //forgot password
-const forgotPassword = asyncHandler(async(req, res) => {
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
 
-})
+  if (!user) {
+    res.status(404);
+    throw new error("User does not exist");
+  }
+  //create rest token
+  let restToken = crypto.randomBytes(32).toString("hex") + user._id;
+
+  //hash token
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(restToken)
+    .digest("hex");
+  console.log(restToken);
+  res.send("forgot password");
+});
 
 module.exports = {
   registerUser,
