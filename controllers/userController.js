@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const Token  = require("../models/tokenModels");
 const crypto = require("crypto");
+const sendEmail = require("../utils/sendEmail");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -216,16 +217,23 @@ const forgotPassword = asyncHandler(async (req, res) => {
     res.status(404);
     throw new error("User does not exist");
   }
-  //create rest token
-  let restToken = crypto.randomBytes(32).toString("hex") + user._id;
+  // Create Reste Token
+  let resetToken = crypto.randomBytes(32).toString("hex") + user._id;
+  console.log(resetToken);
 
-  //hash token
+  // Hash token before saving to DB
   const hashedToken = crypto
     .createHash("sha256")
-    .update(restToken)
+    .update(resetToken)
     .digest("hex");
-  console.log(restToken);
-  res.send("forgot password");
+
+  // Save Token to DB
+  await new Token({
+    userId: user._id,
+    token: hashedToken,
+    createdAt: Date.now(),
+    expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
+  }).save();
 });
 
 module.exports = {
