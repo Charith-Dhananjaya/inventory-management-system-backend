@@ -234,7 +234,25 @@ const forgotPassword = asyncHandler(async (req, res) => {
     createdAt: Date.now(),
     expiresAt: Date.now() + 30 * (60 * 1000), // Thirty minutes
   }).save();
+
+  //construct EMAIL
+  const resetUrl = `${process.env.FRONTEND_URL}/
+  reserPassword/${reserToken}`
+
+  //reset email
+  const massage = `
+  <h2>Hello ${user.name}</h2>
+  <p>Please use url below to reset your password
+  </p>
+  <p>this reset link valid only 30 minutes.
+  </p>
+  <a href = ${reserUrl} clicktracking=off>${resetUrl}</a>
+  <p>Regards...<p>
+  <p>rservior team</p>
+  res.send("Forgot password");
+  `
 });
+
 
 module.exports = {
   registerUser,
