@@ -250,7 +250,17 @@ const forgotPassword = asyncHandler(async (req, res) => {
   <p>Regards...<p>
   <p>rservior team</p>
   res.send("Forgot password");
-  `
+  `;
+  const subject = "Password Reset Request";
+  const send_to = user.email;
+  const sent_from = process.env.EMAIL_USER;
+  try {
+    await sendEmail(subject, message, send_to, sent_from);
+    res.status(200).json({ success: true, message: "Reset Email Sent" });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Email not sent, please try again");
+  }
 });
 
 
